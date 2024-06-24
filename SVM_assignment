@@ -1,146 +1,153 @@
-{
-  "nbformat": 4,
-  "nbformat_minor": 0,
-  "metadata": {
-    "colab": {
-      "provenance": [],
-      "toc_visible": true,
-      "authorship_tag": "ABX9TyMeQZbSWMT/hF2Hq5NimsF3",
-      "include_colab_link": true
-    },
-    "kernelspec": {
-      "name": "python3",
-      "display_name": "Python 3"
-    },
-    "language_info": {
-      "name": "python"
-    }
-  },
-  "cells": [
-    {
-      "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github",
-        "colab_type": "text"
-      },
-      "source": [
-        "<a href=\"https://colab.research.google.com/github/barathR18/deep-learning/blob/main/SVM_assignment_day3\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
-      ]
-    },
-    {
-      "cell_type": "code",
-      "execution_count": 1,
-      "metadata": {
-        "colab": {
-          "base_uri": "https://localhost:8080/"
-        },
-        "id": "SuwlSlcJxQ7h",
-        "outputId": "ea48fa74-eed7-49c3-f47e-8eadc2802232"
-      },
-      "outputs": [
-        {
-          "output_type": "stream",
-          "name": "stdout",
-          "text": [
-            "length of x: 100\n",
-            "first 10 values of x are \n",
-            " : [[5.1 3.5 1.4 0.2]\n",
-            " [4.9 3.  1.4 0.2]\n",
-            " [4.7 3.2 1.3 0.2]\n",
-            " [4.6 3.1 1.5 0.2]\n",
-            " [5.  3.6 1.4 0.2]\n",
-            " [5.4 3.9 1.7 0.4]\n",
-            " [4.6 3.4 1.4 0.3]\n",
-            " [5.  3.4 1.5 0.2]\n",
-            " [4.4 2.9 1.4 0.2]\n",
-            " [4.9 3.1 1.5 0.1]]\n",
-            "first 10 values of y are: [0 0 0 0 0 0 0 0 0 0]\n",
-            "attributes are: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']\n",
-            "mean: [5.471 3.099 2.861 0.786]\n",
-            "standard_deviation are: [0.63848179 0.47633916 1.44228257 0.56232019]\n",
-            "accuracy rate of SVM with kernal linear model is : 1.0\n",
-            "sample predications are: [0 1]\n",
-            "accuracy rate of SVM model using rbf model: 1.0\n"
-          ]
-        }
-      ],
-# Import necessary libraries\n",
-        "from sklearn import datasets\n",
-        "from sklearn.model_selection import train_test_split\n",
-        "from sklearn.svm import SVC\n",
-        "import numpy as np\n",
-        "import pandas as pd\n",
-        "\n",
-        "# Load the Iris dataset\n",
-        "iris = datasets.load_iris()\n",
-        "X = iris.data\n",
-        "y = iris.target\n",
-        "\n",
-        "# Filter to include only 'setosa' and 'versicolor' (labels 0 and 1)\n",
-        "filter_mask = (y == 0) | (y == 1)\n",
-        "X_filtered = X[filter_mask]\n",
-        "y_filtered = y[filter_mask]\n",
-        "\n",
-        "# Step 2: Find the number of cases\n",
-        "num_cases = len(X_filtered)\n",
-        "print(\"length of x:\",num_cases)\n",
-        "# Step 3: Print the first 10 cases of X and Y\n",
-        "first_10_X = X_filtered[:10]\n",
-        "first_10_y = y_filtered[:10]\n",
-        "print(\"first 10 values of x are \\n :\",first_10_X)\n",
-        "print(\"first 10 values of y are:\",first_10_y)\n",
-        "\n",
-        "# Step 4: Find what attributes are there for X\n",
-        "attributes = iris.feature_names\n",
-        "print(\"attributes are:\",attributes)\n",
-        "\n",
-        "# Step 5: Find the mean and standard deviation of each attribute\n",
-        "means = np.mean(X_filtered, axis=0)\n",
-        "print(\"mean:\",means)\n",
-        "stds = np.std(X_filtered, axis=0)\n",
-        "print(\"standard_deviation are:\",stds)\n",
-        "attribute_stats = pd.DataFrame({'Mean': means, 'Standard Deviation': stds}, index=attributes)\n",
-        "\n",
-        "# Step 6: Use SVC (kernel='linear') to train it\n",
-        "# Split the data into training and testing sets\n",
-        "X_train, X_test, y_train, y_test = train_test_split(X_filtered, y_filtered, test_size=0.1, random_state=42)\n",
-        "\n",
-        "# Train the SVC with a linear kernel\n",
-        "svc_linear = SVC(kernel='linear')\n",
-        "svc_linear.fit(X_train, y_train)\n",
-        "\n",
-        "# Evaluate the model\n",
-        "accuracy_linear = svc_linear.score(X_test, y_test)\n",
-        "print(\"accuracy rate of SVM with kernal linear model is :\",accuracy_linear)\n",
-        "\n",
-        "# Step 7: Test with a few sample data\n",
-        "# Create a few sample data points\n",
-        "sample_data = np.array([\n",
-        "    [5.1, 3.5, 1.4, 0.2],  # setosa-like sample\n",
-        "    [7.0, 3.2, 4.7, 1.4]   # versicolor-like sample\n",
-        "])\n",
-        "\n",
-        "# Predict using the trained model\n",
-        "sample_predictions = svc_linear.predict(sample_data)\n",
-        "print(\"sample predications are:\",sample_predictions)\n",
-        "\n",
-        "# Step 8: Improve the classifier to get 95% accuracy\n",
-        "# Train the SVC with an RBF kernel\n",
-        "svc_rbf = SVC(kernel='rbf')\n",
-        "svc_rbf.fit(X_train, y_train)\n",
-        "\n",
-        "# Evaluate the model\n",
-        "accuracy_rbf = svc_rbf.score(X_test, y_test)\n",
-        "\n",
-        "num_cases, first_10_X, first_10_y, attributes, attribute_stats, accuracy_linear, sample_predictions, accuracy_rbf\n",
-        "# Train the SVC with an RBF kernel\n",
-        "svc_rbf = SVC(kernel='rbf')\n",
-        "svc_rbf.fit(X_train, y_train)\n",
-        "\n",
-        "# Evaluate the model\n",
-        "accuracy_rbf = svc_rbf.score(X_test, y_test)\n",
-        "print(\"accuracy rate of SVM model using rbf model:\",accuracy_rbf)\n"
-      ]
-    }
-  ]
-}
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[2]:
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+
+
+# In[3]:
+
+
+iris = datasets.load_iris()
+X = iris.data  # Features
+Y = iris.target  # Labels
+
+
+# In[4]:
+
+
+X_filtered = X[Y != 2]
+Y_filtered = Y[Y != 2]
+
+
+# In[5]:
+
+
+num_cases = len(X_filtered)
+
+
+# In[6]:
+
+
+print("First 10 cases of X:")
+print(X_filtered[:10])
+print("Corresponding labels (Y):")
+print(Y_filtered[:10])
+
+
+# In[7]:
+
+
+attributes = iris.feature_names
+
+
+# In[8]:
+
+
+mean_values = np.mean(X_filtered, axis=0)
+std_values = np.std(X_filtered, axis=0)
+for i, attribute in enumerate(attributes):
+    print(f"{attribute}:")
+    print(f"  Mean: {mean_values[i]}, Standard Deviation: {std_values[i]}")
+
+
+# In[9]:
+
+
+X_train, X_test, y_train, y_test = train_test_split(X_filtered, Y_filtered, test_size=0.3, random_state=42)
+
+
+# In[10]:
+
+
+svc = SVC(kernel='linear')
+svc.fit(X_train, y_train)
+
+
+# In[11]:
+
+
+sample_data = np.array([[5.1, 3.5, 1.4, 0.2],  # Should be predicted as setosa (label 0)
+                        [6.0, 3.0, 4.5, 1.5],  # Should be predicted as versicolor (label 1)
+                        [4.8, 3.2, 1.6, 0.1]]) # Should be predicted as setosa (label 0)
+
+sample_predictions = svc.predict(sample_data)
+print("Predictions for sample data:")
+print(sample_predictions)
+
+
+# In[12]:
+
+
+y_pred = svc.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"\nAccuracy on test set: {accuracy}")
+
+
+# In[13]:
+
+
+if accuracy >= 0.95:
+    print("SVC classifier achieved 95% or better accuracy!")
+else:
+    print("SVC classifier did not achieve 95% accuracy.")
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, target_names=iris.target_names[:2]))
+
+
+# In[ ]:
+
+
+
+
+#OutPut
+"""First 10 cases of X:
+[[5.1 3.5 1.4 0.2]
+ [4.9 3.  1.4 0.2]
+ [4.7 3.2 1.3 0.2]
+ [4.6 3.1 1.5 0.2]
+ [5.  3.6 1.4 0.2]
+ [5.4 3.9 1.7 0.4]
+ [4.6 3.4 1.4 0.3]
+ [5.  3.4 1.5 0.2]
+ [4.4 2.9 1.4 0.2]
+ [4.9 3.1 1.5 0.1]]
+Corresponding labels (Y):
+[0 0 0 0 0 0 0 0 0 0]
+
+
+sepal length (cm):
+  Mean: 5.471000000000003, Standard Deviation: 0.6384817930058776
+sepal width (cm):
+  Mean: 3.099, Standard Deviation: 0.4763391648814948
+petal length (cm):
+  Mean: 2.861, Standard Deviation: 1.4422825659349836
+petal width (cm):
+  Mean: 0.7859999999999999, Standard Deviation: 0.5623201934841042
+  
+  SVC(kernel='linear')
+  
+  Predictions for sample data:
+[0 1 0]
+
+
+Accuracy on test set: 1.0
+
+SVC classifier achieved 95% or better accuracy!
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        17
+  versicolor       1.00      1.00      1.00        13
+
+    accuracy                           1.00        30
+   macro avg       1.00      1.00      1.00        30
+weighted avg       1.00      1.00      1.00        30"""
